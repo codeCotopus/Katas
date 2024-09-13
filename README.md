@@ -22,11 +22,8 @@ This repository aims to provide developers with practical exercises to refine th
 To get the most out of these katas, you should have:
 
 - Basic to intermediate knowledge of Java programming.
-- Familiarity with concepts from:
-  - "Refactoring" by Martin Fowler.
-  - "Working Effectively with Legacy Code" by Michael Feathers.
-  - Design patterns from the Gang of Four (GoF).
-- An understanding of unit testing with JUnit 5.
+- Familiarity with refactoring and design patterns concepts.  
+- An understanding of unit testing.
 
 ## Katas
 
