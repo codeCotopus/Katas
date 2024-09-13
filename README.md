@@ -100,29 +100,8 @@ All tests should pass, confirming that the refactored code behaves as intended.
 
 ## Contributing
 
-Contributions are welcome! If you have a kata you'd like to add or improvements to existing ones, please follow these steps:
+Contributions are clossed as of now! If you have a kata you'd like to add or improvements to existing ones, please reach out:
 
-1. **Fork the Repository**
-
-2. **Create a Feature Branch**
-
-   ```bash
-   git checkout -b feature/your-feature-name
-   ```
-
-3. **Commit Your Changes**
-
-   ```bash
-   git commit -m "Your detailed description of the changes."
-   ```
-
-4. **Push to the Branch**
-
-   ```bash
-   git push origin feature/your-feature-name
-   ```
-
-5. **Open a Pull Request**
 
 ## License
 
