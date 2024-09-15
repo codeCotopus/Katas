@@ -1,53 +1,57 @@
 package kata1guardrails;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 public class OrderTests {
 
+    @Mock
+    OrderService orderServiceMock;
+
+    @BeforeEach
+    public void setup (){
+        MockitoAnnotations.openMocks(this);
+        when(orderServiceMock.isPaymentMethodValid(any())).thenReturn(true);
+        when(orderServiceMock.areItemsInStock(any())).thenReturn(true);
+        when(orderServiceMock.isShippingAddressValid(any())).thenReturn(true);
+    }
+
     @Test
     public void testProcessOrder_InvalidPaymentMethod() {
-        OrderService orderService = new OrderService() {
-            @Override
-            protected boolean isPaymentMethodValid(Order order) {
-                return false;
-            }
-        };
-        Order order = new Order(orderService);
+        when(orderServiceMock.isPaymentMethodValid(any())).thenReturn(false);
+
+        Order order = new Order(orderServiceMock);
         String result = order.processOrder();
         assertEquals("Invalid payment method.", result);
     }
 
     @Test
     public void testProcessOrder_ItemsOutOfStock() {
-        OrderService orderService = new OrderService() {
-            @Override
-            protected boolean areItemsInStock(Order order) {
-                return false;
-            }
-        };
-        Order order = new Order(orderService);
+        when(orderServiceMock.areItemsInStock(any())).thenReturn(false);
+
+        Order order = new Order(orderServiceMock);
         String result = order.processOrder();
         assertEquals("One or more items are out of stock.", result);
     }
 
     @Test
     public void testProcessOrder_InvalidShippingAddress() {
-        OrderService orderService = new OrderService() {
-            @Override
-            protected boolean isShippingAddressValid(Order order) {
-                return false;
-            }
-        };
-        Order order = new Order(orderService);
+        when(orderServiceMock.isShippingAddressValid(any())).thenReturn(false);
+
+        Order order = new Order(orderServiceMock);
         String result = order.processOrder();
         assertEquals("Invalid shipping address.", result);
     }
 
     @Test
     public void testProcessOrder_Success() {
-        OrderService orderService = new OrderService();
-        Order order = new Order(orderService);
+        Order order = new Order(orderServiceMock);
         String result = order.processOrder();
         assertEquals("Order processed successfully.", result);
     }

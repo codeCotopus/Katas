@@ -1,23 +1,11 @@
 package kata1guardrails;
 
-public class OrderService {
+public interface OrderService {
+    boolean isPaymentMethodValid(Order order);
 
-    protected boolean isPaymentMethodValid(Order order) {
-        // Implementation goes here
-        return true;
-    }
+    boolean areItemsInStock(Order order);
 
-    protected boolean areItemsInStock(Order order) {
-        // Implementation goes here
-        return true;
-    }
+    boolean isShippingAddressValid(Order order);
 
-    protected boolean isShippingAddressValid(Order order) {
-        // Implementation goes here
-        return true;
-    }
-
-    protected void finalizeOrder(Order order) {
-        // Implementation goes here
-    }
+    void finalizeOrder(Order order);
 }
