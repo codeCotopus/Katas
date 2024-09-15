@@ -22,11 +22,8 @@ This repository aims to provide developers with practical exercises to refine th
 To get the most out of these katas, you should have:
 
 - Basic to intermediate knowledge of Java programming.
-- Familiarity with concepts from:
-  - "Refactoring" by Martin Fowler.
-  - "Working Effectively with Legacy Code" by Michael Feathers.
-  - Design patterns from the Gang of Four (GoF).
-- An understanding of unit testing with JUnit 5.
+- Familiarity with refactoring and design patterns concepts.  
+- An understanding of unit testing.
 
 ## Katas
 
@@ -51,52 +48,32 @@ To get the most out of these katas, you should have:
 
 **Description:**
 
-You are tasked with refactoring an `Order` class in an e-commerce application. The `processOrder` method contains deeply nested conditional statements that make the code difficult to read and maintain. The goal is to refactor this method using guard clauses and ensure that the `OrderService` is properly injected as a dependency. Unit tests are provided to validate the behavior before and after refactoring.
+This kata focuses on refactoring the `processOrder` method within the `Order` class of an e-commerce application. The original method uses deeply nested conditional statements to validate an order before processing it. The goal of this kata is to simplify the method by applying **guard clauses**, which allow the code to return early if conditions aren't met, thus improving readability and maintainability.
 
-## Getting Started
+**Steps:**
 
-Follow these steps to set up the project on your local machine:
+1. Start by examining the original code, which uses multiple nested `if` statements to validate conditions such as:
+   - Payment method validity.
+   - Item stock availability.
+   - Shipping address validity.
 
-1. **Clone the Repository:**
+2. Apply **guard clauses** by refactoring the code to return early if any condition fails. This eliminates the need for nested `if` statements, making the code easier to follow.
 
-   ```bash
-   git clone https://github.com/yourusername/code-katas.git
-   ```
+3. Ensure that **dependency injection** is properly implemented by injecting `OrderService` into the `Order` class.
 
-2. **Navigate to the Kata Directory:**
+4. Run unit tests to ensure the behavior remains consistent before and after the refactor.
 
-   ```bash
-   cd code-katas/kata1-guard-clauses
-   ```
+**Scenario:**
 
-3. **Import the Project into Your IDE:**
-
-   - Open your preferred Java IDE (e.g., IntelliJ IDEA, Eclipse).
-   - Import the project as a Maven project.
-
-4. **Install Dependencies:**
-
-   - Ensure that Maven or your IDE handles the dependencies specified in the `pom.xml` file.
-   - JUnit 5 should be included as a dependency for unit testing.
-
-## Running the Tests
-
-To verify your implementation and ensure that your refactoring maintains the desired functionality, run the unit tests provided.
-
-**Using Maven:**
-
-```bash
-mvn test
-```
-
-**Using Your IDE:**
-
-- Right-click on the `OrderTest.java` file.
-- Select **Run 'OrderTest'** or the equivalent option in your IDE.
+Refer to the [solution file](kata1-guard-clauses/solution.md) for full details on the refactoring steps and final implementation.
 
 **Expected Results:**
 
-All tests should pass, confirming that the refactored code behaves as intended.
+- Improved readability due to the simplified, linear structure of the code.
+- Early returns for invalid conditions, preventing unnecessary processing.
+- Passing unit tests to validate the refactored behavior.
+
+ 
 
 ## Contributing
 
