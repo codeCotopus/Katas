@@ -44,7 +44,7 @@ public String processOrder() {
 In refactoring, we use guard clauses to handle invalid conditions early and exit the method immediately when a condition is not met. This reduces nesting and improves code clarity.
 
 #### Start with the constructor:
-```
+```java
     public Order(OrderService orderService) {
         if (orderService != null ){
             this.orderService = orderService;
@@ -54,7 +54,7 @@ In refactoring, we use guard clauses to handle invalid conditions early and exit
     }
 ```
 Proceed to apply 'Invert if condition'
-```
+```java
     public Order(OrderService orderService) {
         if (orderService == null) {
             throw  new IllegalArgumentException("OrderService cannot be null.");
@@ -65,7 +65,7 @@ Proceed to apply 'Invert if condition'
 ```
 You can now remove the else block. Removing curly braces is optional depending on the conventions you and your team follow.
 
-```
+```java
     public Order(OrderService orderService) {
         if (orderService == null) throw new IllegalArgumentException("OrderService cannot be null.");        
         this.orderService = orderService;
@@ -76,7 +76,7 @@ You can now remove the else block. Removing curly braces is optional depending o
 Look at the top conditional statement. Copy it, revert it, and return the expected value.
 Then return null from the method as a guide. Remember that Removing curly braces is optional.
 Here is the code after this step:
-```
+```java
  public String processOrder() {
         if (!orderService.isPaymentMethodValid(this)) return "Invalid payment method.";
 
@@ -96,7 +96,7 @@ Here is the code after this step:
     }
 ```
 Apply the same technique to the next conditional statement. Remember to execute the Unit tests after each step.
-```
+```java
    public String processOrder() {
         if (!orderService.isPaymentMethodValid(this)) return "Invalid payment method.";
         if (!orderService.areItemsInStock(this)) return "One or more items are out of stock.";
@@ -115,7 +115,7 @@ Apply the same technique to the next conditional statement. Remember to execute 
     }
 ```
 And again...
-```
+```java
  public String processOrder() {
         if (!orderService.isPaymentMethodValid(this)) return "Invalid payment method.";
         if (!orderService.areItemsInStock(this)) return "One or more items are out of stock.";
@@ -133,7 +133,7 @@ And again...
     }
 ```
 Finally, we have covered all the conditions, and can complete the process by removing the nested if statements.
-```
+```java
 
     public String processOrder() {
         if (!orderService.isPaymentMethodValid(this)) return "Invalid payment method.";
