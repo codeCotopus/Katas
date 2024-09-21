@@ -27,7 +27,7 @@ To get the most out of these katas, you should have:
 
 ## Katas
 
-### 1. Improving Code Readability with Guard Clauses
+### 1. [Improving Code Readability with Guard Clauses](katas/scenarios/kata1-guardrails.md)
 
 **Objective:** Refactor a legacy codebase to improve readability and maintainability using guard clauses.
 
