@@ -15,17 +15,7 @@
 
 ---
 
-### **2. Scenario**
-
-You are a software developer tasked with maintaining a legacy codebase for an e-commerce application. The `Order` class is responsible for processing orders, but it contains deeply nested conditional statements, making the code difficult to read and maintain. Moreover, the `OrderService` is now a dependency of the `Order`, injected to provide necessary services.
-
-Your goals are:
-
-- Refactor the nested conditional statements in the `Order` class into guard clauses.
-
----
-
-### **3. Scenario Description and Goals**
+### **2. Scenario Description and Goals**
 
 **Scenario:**
 
@@ -46,7 +36,7 @@ These checks are currently implemented using nested `if` statements within the `
 
 ---
 
-### **4. Code to Download**
+### **3. Code to Download**
 **Files:**
 
 - [`Order.java`](../src/main/java/kata1guardrails/Order.java)
