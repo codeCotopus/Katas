@@ -50,8 +50,8 @@ These checks are currently implemented using nested `if` statements within the `
 **Files:**
 
 - [`Order.java`](../src/main/java/kata1guardrails/Order.java)
-- [`OrderService.java`](katas/src/main/java/kata1guardrails/OrderService.java)
-- [`OrderTest.java`](katas/src/test/java/kata1guardrails/OrderTests.java)
+- [`OrderService.java`](../src/main/java/kata1guardrails/OrderService.java)
+- [`OrderTest.java`](../src/test/java/kata1guardrails/OrderTests.java)
 
-You can download the starter code and unit tests from the [here](katas).
+You can download the starter code and unit tests from the [here](../).
 
