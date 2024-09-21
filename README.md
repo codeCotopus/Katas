@@ -42,7 +42,7 @@ To get the most out of these katas, you should have:
 
 **Files:**
 
-- [`Order.java`](kata1-guard-clauses/Order.java)
+- [`Order.java`](katas/src)
 - [`OrderService.java`](kata1-guard-clauses/OrderService.java)
 - [`OrderTest.java`](kata1-guard-clauses/OrderTest.java)
 
