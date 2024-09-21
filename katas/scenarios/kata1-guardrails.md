@@ -49,7 +49,7 @@ These checks are currently implemented using nested `if` statements within the `
 ### **4. Code to Download**
 **Files:**
 
-- [`Order.java`](katas/src/main/java/kata1guardrails/Order.java)
+- [`Order.java`](../src/main/java/kata1guardrails/Order.java)
 - [`OrderService.java`](katas/src/main/java/kata1guardrails/OrderService.java)
 - [`OrderTest.java`](katas/src/test/java/kata1guardrails/OrderTests.java)
 
