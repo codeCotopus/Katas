@@ -1,19 +1,29 @@
 package kata2templatemethod;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 public class DataProcessorTest {
 
-    // Tests for processCsvData
+    @Mock
+    private DataStorage mockStorage;
+    private DataProcessor processor;
+
+    @BeforeEach
+    public void setup() {
+        MockitoAnnotations.openMocks(this);
+        processor = new DataProcessor(mockStorage);
+    }
 
     @Test
     public void testProcessCsvData_Success() {
-        DataStorage mockStorage = mock(DataStorage.class);
         when(mockStorage.storeData(anyString())).thenReturn(StorageResult.SUCCESS);
 
-        DataProcessor processor = new DataProcessor(mockStorage);
         String data = "name,age,location";
         ProcessingStatus result = processor.processCsvData(data);
 
@@ -23,11 +33,7 @@ public class DataProcessorTest {
 
     @Test
     public void testProcessCsvData_ValidationFailed_NullData() {
-        DataStorage mockStorage = mock(DataStorage.class);
-
-        DataProcessor processor = new DataProcessor(mockStorage);
-        String data = null;
-        ProcessingStatus result = processor.processCsvData(data);
+        ProcessingStatus result = processor.processCsvData(null);
 
         assertEquals(ProcessingStatus.VALIDATION_FAILED, result);
         verifyNoInteractions(mockStorage);
@@ -35,9 +41,6 @@ public class DataProcessorTest {
 
     @Test
     public void testProcessCsvData_ValidationFailed_EmptyData() {
-        DataStorage mockStorage = mock(DataStorage.class);
-
-        DataProcessor processor = new DataProcessor(mockStorage);
         String data = "";
         ProcessingStatus result = processor.processCsvData(data);
 
@@ -47,9 +50,6 @@ public class DataProcessorTest {
 
     @Test
     public void testProcessCsvData_TransformationFailed() {
-        DataStorage mockStorage = mock(DataStorage.class);
-
-        DataProcessor processor = new DataProcessor(mockStorage);
         String data = "invalid,data";
         ProcessingStatus result = processor.processCsvData(data);
 
@@ -59,10 +59,8 @@ public class DataProcessorTest {
 
     @Test
     public void testProcessCsvData_StorageFailed() {
-        DataStorage mockStorage = mock(DataStorage.class);
         when(mockStorage.storeData(anyString())).thenReturn(StorageResult.FAILURE);
 
-        DataProcessor processor = new DataProcessor(mockStorage);
         String data = "name,age,location";
         ProcessingStatus result = processor.processCsvData(data);
 
@@ -74,10 +72,8 @@ public class DataProcessorTest {
 
     @Test
     public void testProcessJsonData_Success() {
-        DataStorage mockStorage = mock(DataStorage.class);
         when(mockStorage.storeData(anyString())).thenReturn(StorageResult.SUCCESS);
 
-        DataProcessor processor = new DataProcessor(mockStorage);
         String data = "{\"name\":\"John\",\"age\":30}";
         ProcessingStatus result = processor.processJsonData(data);
 
@@ -87,11 +83,7 @@ public class DataProcessorTest {
 
     @Test
     public void testProcessJsonData_ValidationFailed_NullData() {
-        DataStorage mockStorage = mock(DataStorage.class);
-
-        DataProcessor processor = new DataProcessor(mockStorage);
-        String data = null;
-        ProcessingStatus result = processor.processJsonData(data);
+        ProcessingStatus result = processor.processJsonData(null);
 
         assertEquals(ProcessingStatus.VALIDATION_FAILED, result);
         verifyNoInteractions(mockStorage);
@@ -99,9 +91,6 @@ public class DataProcessorTest {
 
     @Test
     public void testProcessJsonData_ValidationFailed_EmptyData() {
-        DataStorage mockStorage = mock(DataStorage.class);
-
-        DataProcessor processor = new DataProcessor(mockStorage);
         String data = "";
         ProcessingStatus result = processor.processJsonData(data);
 
@@ -111,9 +100,6 @@ public class DataProcessorTest {
 
     @Test
     public void testProcessJsonData_TransformationFailed() {
-        DataStorage mockStorage = mock(DataStorage.class);
-
-        DataProcessor processor = new DataProcessor(mockStorage);
         String data = "{\"invalid\":\"data\"}";
         ProcessingStatus result = processor.processJsonData(data);
 
@@ -123,10 +109,8 @@ public class DataProcessorTest {
 
     @Test
     public void testProcessJsonData_StorageFailed() {
-        DataStorage mockStorage = mock(DataStorage.class);
         when(mockStorage.storeData(anyString())).thenReturn(StorageResult.FAILURE);
 
-        DataProcessor processor = new DataProcessor(mockStorage);
         String data = "{\"name\":\"John\",\"age\":30}";
         ProcessingStatus result = processor.processJsonData(data);
 

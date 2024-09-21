@@ -58,9 +58,7 @@ public class OrderTests {
 
     @Test
     public void testOrderConstructor_NullOrderService() {
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            new Order(null);
-        });
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> new Order(null));
         assertEquals("OrderService cannot be null.", exception.getMessage());
     }
 }
