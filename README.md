@@ -37,43 +37,7 @@ To get the most out of these katas, you should have:
 - Simplifying Conditional Logic
 - Enhancing Code Readability
 - Early Return Strategy
-- Unit Testing with Assertions
-- Dependency Injection
-
-**Files:**
-
-- [`Order.java`](katas/src)
-- [`OrderService.java`](kata1-guard-clauses/OrderService.java)
-- [`OrderTest.java`](kata1-guard-clauses/OrderTest.java)
-
-**Description:**
-
-This kata focuses on refactoring the `processOrder` method within the `Order` class of an e-commerce application. The original method uses deeply nested conditional statements to validate an order before processing it. The goal of this kata is to simplify the method by applying **guard clauses**, which allow the code to return early if conditions aren't met, thus improving readability and maintainability.
-
-**Steps:**
-
-1. Start by examining the original code, which uses multiple nested `if` statements to validate conditions such as:
-   - Payment method validity.
-   - Item stock availability.
-   - Shipping address validity.
-
-2. Apply **guard clauses** by refactoring the code to return early if any condition fails. This eliminates the need for nested `if` statements, making the code easier to follow.
-
-3. Ensure that **dependency injection** is properly implemented by injecting `OrderService` into the `Order` class.
-
-4. Run unit tests to ensure the behavior remains consistent before and after the refactor.
-
-**Scenario:**
-
-Refer to the [solution file](kata1-guard-clauses/solution.md) for full details on the refactoring steps and final implementation.
-
-**Expected Results:**
-
-- Improved readability due to the simplified, linear structure of the code.
-- Early returns for invalid conditions, preventing unnecessary processing.
-- Passing unit tests to validate the refactored behavior.
-
- 
+- Dependency Injection 
 
 ## Contributing
 
