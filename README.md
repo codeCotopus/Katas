@@ -8,6 +8,7 @@ Welcome to the **Code Katas **. This repository contains a series of coding exer
 - [Prerequisites](#prerequisites)
 - [Katas](#katas)
   - [1. Improving Code Readability with Guard Clauses](#1-improving-code-readability-with-guard-clauses)
+  - [2. Refactoring a Data Processing Pipeline Using the Template Method Pattern](#2-refactoring-a-data-processing-pipeline-using-the-template-method-pattern)
 - [Getting Started](#getting-started)
 - [Running the Tests](#running-the-tests)
 - [Contributing](#contributing)
@@ -39,7 +40,7 @@ To get the most out of these katas, you should have:
 - Early Return Strategy
 - Dependency Injection 
 
-### 2. [Refactoring a Data Processing Pipeline Using the Template Method Pattern](kata2-templateMethod.md)
+### 2. [Refactoring a Data Processing Pipeline Using the Template Method Pattern](katas/scenarios/kata2-templateMethod.md)
 
 **Objective:** Refactor a data processing pipeline to remove duplicated algorithms by implementing template method.
 
