@@ -2,19 +2,18 @@
 
 ## Overview
 
-In this solution, we refactor a data processing pipeline to improve its flexibility, maintainability, and adherence to design principles by implementing the **Template Method** pattern using **composition over inheritance** and **interfaces**. The original code contained duplicated logic and was tightly coupled to specific data formats (CSV and JSON). By applying this refactoring, we eliminate code duplication, promote code reuse, and make it easier to extend the pipeline to support new data formats.
+In this solution, we refactor a data processing pipeline by implementing a form of **Template Method** pattern.
+The original code contains duplicated logic and is tightly coupled to specific data formats (CSV and JSON). By applying this refactoring, we eliminate logic duplication, promote code reuse, and make it easier to extend the pipeline to support new data formats.
 
 ## Problem Description
 
 ### Original Implementation
 
-The `DataProcessor` class contains two methods, `processCsvData` and `processJsonData`, which perform data validation, transformation, and storage for CSV and JSON data, respectively. Both methods share similar logic, leading to code duplication and reduced maintainability.
+The `DataProcessor` class contains two methods, `processCsvData` and `processJsonData`, which perform data validation, transformation, and storage for CSV and JSON data, respectively. Both methods represent the same algorithm, leading to code duplication and making the code more rigid.
 
 **Original Code:**
 
 ```java
-// DataProcessor.java
-
 public class DataProcessor {
 
     private final DataStorage dataStorage;
@@ -60,126 +59,22 @@ public class DataProcessor {
 
 ### Issues Identified
 
-- **Code Duplication:** The `processCsvData` and `processJsonData` methods contain duplicated logic for validation, transformation, and storage.
+- **Logic Duplication:** The `processCsvData` and `processJsonData` methods contain duplicated logic for validation, transformation, and storage.
 - **Tight Coupling:** The class is tightly coupled to CSV and JSON formats, making it difficult to add new data formats without modifying existing code.
 - **Lack of Abstraction:** There's no abstraction to represent the processing steps, leading to repetitive code and reduced flexibility.
 - **Violation of Single Responsibility Principle:** The `DataProcessor` class handles multiple responsibilities, including validation, transformation, and storage.
 
 ## Steps for Refactoring
 
-### Step 1: Introduce Interfaces for Processing Steps
+### Step 1: Extract the validation logic
 
-We start by defining interfaces for each processing step: validation, transformation, and storage.
+We start by performing extract method object over the validation condition for each class.
+Although in this example the logic is the same, We will keep two different classes, one for CSV and one for Json.
+Perform "extract variable" so that your validator creation ends up in a different line.
 
-#### **1.1 DataValidator Interface**
-
-```java
-// DataValidator.java
-
-public interface DataValidator {
-    boolean validate(String data);
-}
-```
-
-#### **1.2 DataTransformer Interface**
+Here is the code after this step:
 
 ```java
-// DataTransformer.java
-
-public interface DataTransformer {
-    String transform(String data);
-}
-```
-
-#### **1.3 DataStorage Interface**
-
-```java
-// DataStorage.java
-
-public interface DataStorage {
-    StorageResult storeData(String data);
-}
-```
-
-- **Purpose:** These interfaces define contracts for validation, transformation, and storage operations, promoting loose coupling and flexibility.
-
-### Step 2: Implement Concrete Validators and Transformers
-
-We create concrete classes that implement the `DataValidator` and `DataTransformer` interfaces for CSV and JSON data formats.
-
-#### **2.1 CSV Implementations**
-
-##### **CsvDataValidator**
-
-```java
-// CsvDataValidator.java
-
-public class CsvDataValidator implements DataValidator {
-    @Override
-    public boolean validate(String data) {
-        return data != null && !data.isEmpty();
-    }
-}
-```
-
-##### **CsvDataTransformer**
-
-```java
-// CsvDataTransformer.java
-
-public class CsvDataTransformer implements DataTransformer {
-    @Override
-    public String transform(String data) {
-        if (data.contains("invalid")) {
-            return null; // Simulate transformation failure
-        }
-        return data.replace(",", ";");
-    }
-}
-```
-
-#### **2.2 JSON Implementations**
-
-##### **JsonDataValidator**
-
-```java
-// JsonDataValidator.java
-
-public class JsonDataValidator implements DataValidator {
-    @Override
-    public boolean validate(String data) {
-        return data != null && !data.isEmpty();
-    }
-}
-```
-
-##### **JsonDataTransformer**
-
-```java
-// JsonDataTransformer.java
-
-public class JsonDataTransformer implements DataTransformer {
-    @Override
-    public String transform(String data) {
-        if (data.contains("invalid")) {
-            return null; // Simulate transformation failure
-        }
-        return data.replaceAll("\"", "'");
-    }
-}
-```
-
-- **Purpose:** These implementations encapsulate the specific validation and transformation logic for each data format, adhering to the Single Responsibility Principle.
-
-### Step 3: Refactor the DataProcessor Class to Use Composition
-
-We modify the `DataProcessor` class to use composition by injecting the appropriate validator and transformer implementations into a template method.
-
-#### **3.1 Updated DataProcessor Class**
-
-```java
-// DataProcessor.java
-
 public class DataProcessor {
 
     private final DataStorage dataStorage;
@@ -189,27 +84,145 @@ public class DataProcessor {
     }
 
     public ProcessingStatus processCsvData(String data) {
-        DataValidator validator = new CsvDataValidator();
-        DataTransformer transformer = new CsvDataTransformer();
-
-        return processData(data, validator, transformer);
-    }
-
-    public ProcessingStatus processJsonData(String data) {
-        DataValidator validator = new JsonDataValidator();
-        DataTransformer transformer = new JsonDataTransformer();
-
-        return processData(data, validator, transformer);
-    }
-
-    private ProcessingStatus processData(String data, DataValidator validator, DataTransformer transformer) {
         // Step 1: Validation
-        if (!validator.validate(data)) {
+        CsvValidator csvValidator = new CsvValidator(data);
+        if (csvValidator.validate()) {
             return ProcessingStatus.VALIDATION_FAILED;
         }
 
         // Step 2: Transformation
-        String transformedData = transformer.transform(data);
+        String transformedData = transformCsv(data);
+        if (transformedData == null) {
+            return ProcessingStatus.TRANSFORMATION_FAILED;
+        }
+
+        // Step 3: Storage
+        StorageResult storageResult = dataStorage.storeData(transformedData);
+        if (storageResult == StorageResult.SUCCESS) {
+            return ProcessingStatus.SUCCESS;
+        } else {
+            return ProcessingStatus.STORAGE_FAILED;
+        }
+    }
+
+    public ProcessingStatus processJsonData(String data) {
+        // Step 1: Validation
+        JsonValidator jsonValidator = new JsonValidator(data);
+        if (jsonValidator.validate()) {
+            return ProcessingStatus.VALIDATION_FAILED;
+        }
+
+        // Step 2: Transformation
+        String transformedData = transformJson(data);
+        if (transformedData == null) {
+            return ProcessingStatus.TRANSFORMATION_FAILED;
+        }
+
+        // Step 3: Storage
+        StorageResult storageResult = dataStorage.storeData(transformedData);
+        if (storageResult == StorageResult.SUCCESS) {
+            return ProcessingStatus.SUCCESS;
+        } else {
+            return ProcessingStatus.STORAGE_FAILED;
+        }
+    }
+
+    private String transformCsv(String data) {
+        // Dummy transformation logic for CSV
+        if (data.contains("invalid")) {
+            return null; // Simulate transformation failure
+        }
+        return data.replace(",", ";");
+    }
+
+    private String transformJson(String data) {
+        // Dummy transformation logic for JSON
+        if (data.contains("invalid")) {
+            return null; // Simulate transformation failure
+        }
+        return data.replaceAll("\"", "'");
+    }
+
+    private class CsvValidator {
+        private String data;
+
+        public CsvValidator(String data) {
+            this.data = data;
+        }
+
+        public boolean validate() {
+            return data == null || data.isEmpty();
+        }
+    }
+
+    private class JsonValidator {
+        private String data;
+
+        public JsonValidator(String data) {
+            this.data = data;
+        }
+
+        public boolean validate() {
+            return data == null || data.isEmpty();
+        }
+    }
+}
+```
+
+Also, note that in general any class that has a verb-noun as as name (like validator for example), is a very poor idea. For the purpose of this Kata we'll live with this. 
+
+### Step 2: Extract the processing logic and move classes out. 
+We will apply a similar process to the validation logic. Introduce Method object at the `transformCsv`, and `transformJson` methods respectively, followed by inlining of these methods. 
+Proceed to extract variable so that the declaration and usage of the two classes are in two lines. Finally, move the declaration of th transformer classes to the top.
+
+We will then proceed to move all the new classes out with "Move inner class to upper level".
+
+This is how the code should look after this step: 
+
+```java
+public class DataProcessor {
+
+    private final DataStorage dataStorage;
+
+    public DataProcessor(DataStorage dataStorage) {
+        this.dataStorage = dataStorage;
+    }
+
+    public ProcessingStatus processCsvData(String data) {
+        // Step 1: Validation
+        CsvValidator csvValidator = new CsvValidator(data);
+        CsvTransformer csvTransformer = new CsvTransformer(data);
+        
+        if (csvValidator.validate()) {
+            return ProcessingStatus.VALIDATION_FAILED;
+        }
+
+        // Step 2: Transformation
+        String transformedData = csvTransformer.transform();
+        if (transformedData == null) {
+            return ProcessingStatus.TRANSFORMATION_FAILED;
+        }
+
+        // Step 3: Storage
+        StorageResult storageResult = dataStorage.storeData(transformedData);
+        if (storageResult == StorageResult.SUCCESS) {
+            return ProcessingStatus.SUCCESS;
+        } else {
+            return ProcessingStatus.STORAGE_FAILED;
+        }
+    }
+
+    public ProcessingStatus processJsonData(String data) {
+        // Step 1: Validation
+        JsonValidator jsonValidator = new JsonValidator(data);
+        JsonTransfomer jsonTransfomer = new JsonTransfomer(data);
+        
+        if (jsonValidator.validate()) {
+            return ProcessingStatus.VALIDATION_FAILED;
+        }
+
+        // Step 2: Transformation
+        String transformedData = jsonTransfomer.transform();
         if (transformedData == null) {
             return ProcessingStatus.TRANSFORMATION_FAILED;
         }
@@ -225,82 +238,127 @@ public class DataProcessor {
 }
 ```
 
-- **Explanation:**
-    - **Template Method:** The `processData` method serves as the template method, defining the skeleton of the algorithm.
-    - **Composition Over Inheritance:** The `DataProcessor` class composes instances of `DataValidator` and `DataTransformer` instead of relying on inheritance.
-    - **Dependency Injection:** The `DataStorage` dependency is injected via the constructor, allowing for easy mocking during testing.
-
-### Step 4: Ensure Unit Tests Remain Unchanged
-
-Because we've maintained the public API of the `DataProcessor` class, the existing unit tests do not need any modifications. They continue to validate the behavior of the `processCsvData` and `processJsonData` methods.
-
-**Unit Tests:**
+### Step 3: Extract Interfaces for validators and transformers.
+Now that we have moved the classes out, we can proceed to extract interfaces from them. Here are the interface definitions:
 
 ```java
-// DataProcessorTest.java
+public interface Validator {
+    boolean validate();
+}
 
-public class DataProcessorTest {
 
-    @Mock
-    private DataStorage mockStorage;
-    private DataProcessor processor;
+```
+```java
+public interface Transformer {
+    String transform();
+}
+```
 
-    @BeforeEach
-    public void setup() {
-        MockitoAnnotations.openMocks(this);
-        processor = new DataProcessor(mockStorage);
+Proceed to replace concrete class variables for their interface in the `DataProcessorClass`.
+Also, at this stage those comments are pretty annoying, and the code speaks for itself. Remove them. 
+
+Here is what the code looks like. 
+```java
+public class DataProcessor {
+
+    private final DataStorage dataStorage;
+
+    public DataProcessor(DataStorage dataStorage) {
+        this.dataStorage = dataStorage;
     }
 
-    // ... existing test methods remain unchanged
+    public ProcessingStatus processCsvData(String data) {        
+        Validator csvValidator = new CsvValidator(data);
+        Transformer csvTransformer = new CsvTransformer(data);
+
+        if (csvValidator.validate()) {
+            return ProcessingStatus.VALIDATION_FAILED;
+        }
+
+        String transformedData = csvTransformer.transform();
+        if (transformedData == null) {
+            return ProcessingStatus.TRANSFORMATION_FAILED;
+        }
+
+        StorageResult storageResult = dataStorage.storeData(transformedData);
+        if (storageResult == StorageResult.SUCCESS) {
+            return ProcessingStatus.SUCCESS;
+        } else {
+            return ProcessingStatus.STORAGE_FAILED;
+        }
+    }
+
+    public ProcessingStatus processJsonData(String data) {        
+        Validator jsonValidator = new JsonValidator(data);
+        Transformer jsonTransformer = new JsonTransformer(data);
+
+        if (jsonValidator.validate()) {
+            return ProcessingStatus.VALIDATION_FAILED;
+        }
+        
+        String transformedData = jsonTransformer.transform();
+        if (transformedData == null) {
+            return ProcessingStatus.TRANSFORMATION_FAILED;
+        }
+        
+        StorageResult storageResult = dataStorage.storeData(transformedData);
+        if (storageResult == StorageResult.SUCCESS) {
+            return ProcessingStatus.SUCCESS;
+        } else {
+            return ProcessingStatus.STORAGE_FAILED;
+        }
+    }
 }
 ```
 
-- **Note:** The unit tests achieve 100% class, method, line, and branch coverage, ensuring that the refactored code maintains the same functionality as the original implementation.
+#### Step 4: Extract method, and introduce method template.
 
-## Final Refactored Code
+Our two "process" methods are now identical except for the validator and processor.
+If you extract method after the validator and processors are declared, your IDE should be smart enough to identify this and suggest a replacement. 
 
-### **DataProcessor.java**
-
-*(As shown in Step 3)*
-
-### **Interfaces**
-
-- **DataValidator.java**
-- **DataTransformer.java**
-- **DataStorage.java**
-
-### **Concrete Implementations**
-
-- **CsvDataValidator.java**
-- **CsvDataTransformer.java**
-- **JsonDataValidator.java**
-- **JsonDataTransformer.java**
-
-### **Enums**
-
-#### **ProcessingStatus.java**
+After some clean up and some small changes, here is the code. And yes... I love to see Java code without curly braces.
 
 ```java
-// ProcessingStatus.java
+public class DataProcessor {
 
-public enum ProcessingStatus {
-    VALIDATION_FAILED,
-    TRANSFORMATION_FAILED,
-    STORAGE_FAILED,
-    SUCCESS
+    private final DataStorage dataStorage;
+
+    public DataProcessor(DataStorage dataStorage) {
+        this.dataStorage = dataStorage;
+    }
+
+    public ProcessingStatus processCsvData(String data) {
+        final Validator csvValidator = new CsvValidator(data);
+        final Transformer csvTransformer = new CsvTransformer(data);
+
+        return getProcessingStatus(csvValidator, csvTransformer);
+    }
+
+    public ProcessingStatus processJsonData(String data) {
+        final Validator jsonValidator = new JsonValidator(data);
+        final Transformer jsonTransformer = new JsonTransformer(data);
+
+        return getProcessingStatus(jsonValidator, jsonTransformer);
+    }
+
+    private ProcessingStatus getProcessingStatus(final Validator jsonValidator, final Transformer jsonTransformer) {
+        if (jsonValidator.validate()) return ProcessingStatus.VALIDATION_FAILED;
+
+        String transformedData = jsonTransformer.transform();
+        if (transformedData == null) return ProcessingStatus.TRANSFORMATION_FAILED;
+
+        StorageResult storageResult = dataStorage.storeData(transformedData);
+        if (storageResult == StorageResult.SUCCESS) return ProcessingStatus.SUCCESS;
+        else return ProcessingStatus.STORAGE_FAILED;        
+    }
 }
+
 ```
 
-#### **StorageResult.java**
-
-```java
-// StorageResult.java
-
-public enum StorageResult {
-    SUCCESS,
-    FAILURE
-}
-```
+For the purpose of identifying where we can use template method, we are done at this stage. 
+The code still can get some improvements.The biggest one would be Injection of the validator and processors.
+This could be taken one step further by making `data` a proper class rather than a primitive, and inject these behaviours there, maybe as strategies.
+ 
 
 ### **Unit Tests**
 
@@ -312,46 +370,29 @@ public enum StorageResult {
     - Common logic is centralized in the `processData` method, reducing repetition.
 
 2. **Improved Flexibility and Extensibility:**
-    - New data formats can be added by implementing `DataValidator` and `DataTransformer` interfaces without modifying existing code.
+    - New data formats can be added by implementing `Validator` and `Tanfsormer` interfaces without modifying the existing algorithm. 
 
 3. **Adherence to Design Principles:**
     - **Single Responsibility Principle:** Each class has a single responsibility.
-    - **Open/Closed Principle:** The system is open for extension but closed for modification.
+    - **Open/Closed Principle:** The template method is open for extension while closed for modification.
     - **Dependency Inversion Principle:** High-level modules depend on abstractions.
 
 4. **Enhanced Testability:**
-    - Individual components (validators and transformers) can be tested separately.
-    - The use of interfaces and dependency injection simplifies mocking during testing.
-
-5. **Maintenance of Public API:**
-    - The public methods of `DataProcessor` remain unchanged, ensuring backward compatibility and no need to modify existing clients or tests.
-
-6. **Composition Over Inheritance:**
-    - By using composition, we avoid the drawbacks of inheritance, such as tight coupling and reduced flexibility.
+    - Individual components (validators and transformers) can be tested separately. 
 
 ## Conclusion
 
-By applying the Template Method pattern using composition and interfaces, we've refactored the data processing pipeline to be more maintainable, extensible, and aligned with SOLID principles. This approach enhances code readability and allows for easy integration of new data formats without impacting existing functionality.
+By applying the Template Method pattern we've refactored the data processing pipeline to be more maintainable, extensible, and aligned with SOLID principles. This approach enhances code readability and allows for easy integration of new data formats without impacting existing functionality.
 
-## Next Steps
+## Next Steps to try on your own.
+
+- **Inject the correct Validator and Processor to DataProcessor:**
+    - Since the client is already choosing from `ProcessCsvData` and `ProcessJsonData` it is in a position to decide which implementations to inject. Do this and remove the concrete methods.
 
 - **Implement Additional Data Formats:**
-    - Extend the pipeline to support XML, YAML, or other data formats by creating new implementations of `DataValidator` and `DataTransformer`.
+    - Extend the pipeline to support XML, YAML, or other data formats by creating new implementations of `Validator` and `Transformer`.
 
-- **Enhance Error Handling:**
-    - Implement detailed error logging and exception handling within the processing steps.
-
-- **Optimize Performance:**
-    - If necessary, optimize the processing steps for performance, especially for large data sets.
-
-- **Refine Unit Tests:**
-    - Add unit tests for the individual validator and transformer implementations to ensure their correctness in isolation.
-
-## References
-
-- **Design Patterns: Elements of Reusable Object-Oriented Software** by Gamma et al.
-- **SOLID Principles:** Guidelines for writing clean and maintainable code.
-
----
-
-**Note:** This refactoring maintains the integrity of the original unit tests, ensuring that the behavior of the system remains consistent while improving the code's structure and adherence to best practices.
+- **Naming:**
+    - Process is a terrible name, same as Manager. Irrespectively of it being use on a method or class, it should be changed to a name that tells the reader what is going on.
+    - Classes in this example contain verbs made nouns (To validate -> Validator, as an example). In general class names are better as pure nouns. If I were force to change this, I would probably replace Validator for ValidatorStrategy (or Validator Behaviour), which would immediately point me to Strategy pattern.
+ 
