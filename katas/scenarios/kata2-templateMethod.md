@@ -5,9 +5,9 @@
 ### **1. Concepts and Patterns Addressed**
 
 - **Template Method Pattern**
-- **Code Duplication Elimination**
+- **How to eliminate duplicate logic**
 - **Interfaces and Abstraction**
-- **SOLID Principles (Single Responsibility, Open/Closed, Dependency Inversion)**
+- **SOLID Principles (Single Responsibility, Open/Closed)**
 - **Unit Testing**
 
 ---
