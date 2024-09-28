@@ -39,6 +39,16 @@ To get the most out of these katas, you should have:
 - Early Return Strategy
 - Dependency Injection 
 
+### 2. [Refactoring a Data Processing Pipeline Using the Template Method Pattern](kata2-templateMethod.md)
+
+**Objective:** Refactor a data processing pipeline to remove duplicated algorithms by implementing template method.
+
+**Concepts Covered:**
+
+- Template method pattern
+- How to eliminate duplicate logic.
+- Interfaces and abstraction. 
+
 ## Contributing
 
 Contributions are clossed as of now! If you have a kata you'd like to add or improvements to existing ones, please reach out:
